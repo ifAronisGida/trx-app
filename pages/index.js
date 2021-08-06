@@ -3,7 +3,7 @@ import utilStyles from '../styles/utils.module.css'
 import React, {useState} from 'react';
 import { uuid } from 'uuidv4';
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   
   const res = await fetch("https://sheet.best/api/sheets/fe3d2f14-0e9c-4448-901a-b850c22c0ab8?_raw=1")
   const data = await res.json();
