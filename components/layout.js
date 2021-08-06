@@ -1,11 +1,8 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import styles from './layout.module.css'
-import utilStyles from '../styles/utils.module.css'
 import Link from 'next/link'
 
-const name = 'Áron Gida'
-export const siteTitle = 'Next.js Sample Website'
+export const siteTitle = 'TRX mini app'
 
 export default function Layout({ children, home }) {
   return (
@@ -14,7 +11,7 @@ export default function Layout({ children, home }) {
         <link rel="icon" href="/favicon.ico" />
         <meta
           name="description"
-          content="Learn how to build a personal website using Next.js"
+          content="TRX mini app for generating exercise plans."
         />
         <meta
           property="og:image"
