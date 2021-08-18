@@ -1,7 +1,6 @@
-import Layout from '../components/layout'
-import utilStyles from '../styles/utils.module.css'
 import React, {useState} from 'react';
 import { uuid } from 'uuidv4';
+import Link from 'next/link';
 
 export async function getServerSideProps() {
   
@@ -24,23 +23,24 @@ export async function getServerSideProps() {
 }
 
 export default function Home({allExerciseData}) {
+  
+  const [generatedExerciseList, setGeneratedExerciseList] = useState({activation: [], firstBlock: [], secondBlock: [], thirdBlock: [], connectors: []});
 
-  const [exerciseData, setExerciseData] = useState(allExerciseData);
-  const [headerText, setHeaderText] = useState("Minden gyakorlat:");
   const [settingsHidden, setSettingsHidden] = useState(true);
   const [settings, setSettings] = useState({difficultyOne: '1', difficultyThree: '3', groundExercise: '2'});
 
   const updateTable = () => {
-    setExerciseData(generateRandomExercises(allExerciseData, settings));
-    setHeaderText("Feladat blokk:")
+    setGeneratedExerciseList(generateRandomExercises([...allExerciseData], settings));  
+  
   }
 
   return (
-    <Layout home>
-      <div className="container flex">
+
+      <div className="container">
         <div className="row">
           <button className="button btn-dark col" onClick={() => updateTable()}>Generálás</button>
           <button className="button btn-dark col" onClick={() => setSettingsHidden(!settingsHidden)}>Szabályok menü</button>
+          <Link href="/input"><button className="button btn-dark col">Input megtekintése</button></Link>
         </div>
         
         <div className="row" hidden={settingsHidden} >
@@ -66,42 +66,96 @@ export default function Home({allExerciseData}) {
         
           
         
-      </div>
-      
-      <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
-        <h2 className={utilStyles.headingLg}>{headerText}</h2>
-
-        <table className="table table-striped" >
-          <thead>
-            <tr key='header'>
-              <th>izomcsoport</th>
-              <th>feladat</th>
-              <th>nehézség</th>
-              <th>orientáció</th>
-            </tr>
-          </thead>
-          <tbody>
-
-          {exerciseData.map(({ izomcsoport, feladat, nehezseg , orientacio, id }) => (
-            
-              <tr key={id}>
-                <td>{izomcsoport}</td> 
-                <td>{feladat}</td>
-                <td>{nehezseg}</td>
-                <td>{orientacio}</td>
-              </tr>
-            
-
+        <div contentEditable>
+        <h6 className="row">bemelegítés</h6>
+        <h6 className="row">aktivációs feladatok (7 perces tabata)</h6>
+        <ul className="row">
+          {generatedExerciseList.activation.map(({ feladat, nehezseg, orientacio, izomcsoport , id}) => (
+            <li key={id}>{feladat} {nehezseg} {orientacio} {izomcsoport}</li>
           ))}
-        </tbody>
-        </table>
-      </section>
+        </ul>
 
-    </Layout>
+        <h6 className="row">1. blokk (7 perces tabata)</h6>
+        <ul className="row">
+          {generatedExerciseList.firstBlock.map(({ feladat, nehezseg, orientacio, izomcsoport , id}) => (
+            <li key={id}>{feladat} {nehezseg} {orientacio} {izomcsoport}</li>
+          ))}
+        </ul>
+
+        <h6 className="row">átvezető 1 perc: {generatedExerciseList.connectors.length < 1 ? 'null' : generatedExerciseList.connectors[0].feladat}</h6>
+
+        <h6 className="row">2. blokk (7 perces tabata)</h6>
+        <ul className="row">
+          {generatedExerciseList.secondBlock.map(({ feladat, nehezseg, orientacio, izomcsoport , id}) => (
+            <li key={id}>{feladat} {nehezseg} {orientacio} {izomcsoport}</li>
+          ))}
+        </ul>
+
+        <h6 className="row">átvezető 1 perc: {generatedExerciseList.connectors.length < 1 ? 'null' : generatedExerciseList.connectors[1].feladat}</h6>
+
+        <h6 className="row">3. blokk (7 perces tabata)</h6>
+        <ul className="row">
+          {generatedExerciseList.thirdBlock.map(({ feladat, nehezseg, orientacio, izomcsoport , id}) => (
+            <li key={id}>{feladat} {nehezseg} {orientacio} {izomcsoport}</li>
+          ))}
+        </ul>
+
+        <h6 className="row">nyújtás, levezetés</h6>
+        </div>
+      </div>
+
+
   )
 }
 
-function generateRandomExercises(exerciseData, settings) {
+function generateRandomExercises(exerciseDataProp, settings) {
+  let exerciseData = [...exerciseDataProp];
+  let connectorDataSet = exerciseData.filter(data => data.izomcsoport === 'aerob');
+  exerciseData = exerciseData.filter(data => data.izomcsoport !== 'aerob');
+  console.log(connectorDataSet);
+  let randomExerciseData = {activation: [], firstBlock: [], secondBlock: [], thirdBlock: [], connectors: []};
+
+  //activation
+  randomExerciseData = {...randomExerciseData, activation: generateRandomBlock(exerciseData, settings)}
+  console.log(exerciseData);
+  console.log(randomExerciseData.activation);
+  exerciseData = exerciseData.filter(data => !randomExerciseData.activation.includes(data));
+  console.log(exerciseData);
+
+  //firstBlock
+  randomExerciseData = {...randomExerciseData, firstBlock: generateRandomBlock(exerciseData, settings)}
+  console.log(exerciseData);
+  console.log(randomExerciseData.firstBlock);
+  exerciseData = exerciseData.filter(data => !randomExerciseData.firstBlock.includes(data));
+  console.log(exerciseData);
+
+  //secondBlock
+  randomExerciseData = {...randomExerciseData, secondBlock: generateRandomBlock(exerciseData, settings)}
+  console.log(exerciseData);
+  console.log(randomExerciseData.secondBlock);
+  exerciseData = exerciseData.filter(data => !randomExerciseData.secondBlock.includes(data));
+  console.log(exerciseData);
+
+  //thirdBlock
+  randomExerciseData = {...randomExerciseData, thirdBlock: generateRandomBlock(exerciseData, settings)}
+  console.log(exerciseData);
+  console.log(randomExerciseData.thirdBlock);
+  exerciseData = exerciseData.filter(data => !randomExerciseData.thirdBlock.includes(data));
+  console.log(exerciseData);
+
+  //connectors
+  randomExerciseData.connectors.push(connectorDataSet[getRandomInt(connectorDataSet.length)]);
+  connectorDataSet = connectorDataSet.filter(data => !randomExerciseData.connectors.includes(data));
+  randomExerciseData.connectors.push(connectorDataSet[getRandomInt(connectorDataSet.length)]);
+  
+
+
+  return randomExerciseData
+}
+
+function generateRandomBlock(exerciseData, settings) {
+
+  console.log(exerciseData.length);
 
   //create block
   let newBlock = [];
@@ -117,7 +171,6 @@ function generateRandomExercises(exerciseData, settings) {
       tempNewBlock.push(exerciseData[getRandomInt(exerciseData.length)]);
     }
 
-    
 
     //if can't generate valid block decrease number of exercises
     counter++;
@@ -150,8 +203,8 @@ function generateRandomExercises(exerciseData, settings) {
 
 
   //console.log("orientation filtered out:" + orientation);
-  console.log('Generated valid block: ')
-  console.log(newBlock);
+  //console.log('Generated valid block: ')
+  //console.log(newBlock);
 
   return newBlock;
 }
