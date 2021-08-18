@@ -27,7 +27,7 @@ export default function Home({allExerciseData}) {
   const [generatedExerciseList, setGeneratedExerciseList] = useState({activation: [], firstBlock: [], secondBlock: [], thirdBlock: [], connectors: []});
 
   const [settingsHidden, setSettingsHidden] = useState(true);
-  const [settings, setSettings] = useState({difficultyOne: '1', difficultyThree: '3', groundExercise: '2'});
+  const [settings, setSettings] = useState({difficultyOne: '1', difficultyThree: '3', groundExercise: '2', dev: false});
 
   const updateTable = () => {
     setGeneratedExerciseList(generateRandomExercises([...allExerciseData], settings));  
@@ -60,6 +60,12 @@ export default function Home({allExerciseData}) {
               <label className="col">Földön feladatok max:</label>
               <input type="number" min="0" max="4" className="col" value={settings.groundExercise} onChange={e => setSettings({...settings, groundExercise: e.target.value})}></input>
             </div>
+
+            <div className="row">
+              <label className="col">Feladat részletek mutatása:</label>
+              <input type="checkbox" className="col" checked={settings.dev} onChange={e => setSettings({...settings, dev: e.target.checked})}></input>
+            </div>
+
           </form>
           </div>
         </div>
@@ -71,32 +77,44 @@ export default function Home({allExerciseData}) {
         <h6 className="row">aktivációs feladatok (7 perces tabata)</h6>
         <ul className="row">
           {generatedExerciseList.activation.map(({ feladat, nehezseg, orientacio, izomcsoport , id}) => (
-            <li key={id}>{feladat} {nehezseg} {orientacio} {izomcsoport}</li>
+            <li key={id}>{settings.dev ? feladat + ' | ' + nehezseg + ' | ' + orientacio + ' | '+izomcsoport : feladat}</li>
           ))}
         </ul>
 
         <h6 className="row">1. blokk (7 perces tabata)</h6>
         <ul className="row">
           {generatedExerciseList.firstBlock.map(({ feladat, nehezseg, orientacio, izomcsoport , id}) => (
-            <li key={id}>{feladat} {nehezseg} {orientacio} {izomcsoport}</li>
+            <li key={id}>{settings.dev ? feladat + ' | ' + nehezseg + ' | ' + orientacio + ' | '+izomcsoport : feladat}</li>
           ))}
         </ul>
 
-        <h6 className="row">átvezető 1 perc: {generatedExerciseList.connectors.length < 1 ? 'null' : generatedExerciseList.connectors[0].feladat}</h6>
+        <h6 className="row">átvezető 1 perc: {
+          generatedExerciseList.connectors.length < 1 ? 'null' : settings.dev ? 
+          generatedExerciseList.connectors[0].feladat + ' | ' +
+          generatedExerciseList.connectors[0].nehezseg + ' | ' +
+          generatedExerciseList.connectors[0].orientacio + ' | ' +
+          generatedExerciseList.connectors[0].izomcsoport : generatedExerciseList.connectors[0].feladat
+          }</h6>
 
         <h6 className="row">2. blokk (7 perces tabata)</h6>
         <ul className="row">
           {generatedExerciseList.secondBlock.map(({ feladat, nehezseg, orientacio, izomcsoport , id}) => (
-            <li key={id}>{feladat} {nehezseg} {orientacio} {izomcsoport}</li>
+            <li key={id}>{settings.dev ? feladat + ' | ' + nehezseg + ' | ' + orientacio + ' | '+izomcsoport : feladat}</li>
           ))}
         </ul>
 
-        <h6 className="row">átvezető 1 perc: {generatedExerciseList.connectors.length < 1 ? 'null' : generatedExerciseList.connectors[1].feladat}</h6>
+        <h6 className="row">átvezető 1 perc: {
+          generatedExerciseList.connectors.length < 1 ? 'null' : settings.dev ? 
+          generatedExerciseList.connectors[1].feladat + ' | ' +
+          generatedExerciseList.connectors[1].nehezseg + ' | ' +
+          generatedExerciseList.connectors[1].orientacio + ' | ' +
+          generatedExerciseList.connectors[1].izomcsoport : generatedExerciseList.connectors[0].feladat
+          }</h6>
 
         <h6 className="row">3. blokk (7 perces tabata)</h6>
         <ul className="row">
           {generatedExerciseList.thirdBlock.map(({ feladat, nehezseg, orientacio, izomcsoport , id}) => (
-            <li key={id}>{feladat} {nehezseg} {orientacio} {izomcsoport}</li>
+            <li key={id}>{settings.dev ? feladat + ' | ' + nehezseg + ' | ' + orientacio + ' | '+izomcsoport : feladat}</li>
           ))}
         </ul>
 
