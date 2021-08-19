@@ -4,16 +4,19 @@ import Link from 'next/link';
 
 export async function getServerSideProps() {
   
+  //fetch from gsheets
   const res = await fetch("https://sheet.best/api/sheets/fe3d2f14-0e9c-4448-901a-b850c22c0ab8?_raw=1")
   const data = await res.json();
 
+  //generate unique id fro the fetched data
   const allExerciseData = data.map(data => ({
     
       ...data,
       id: uuid()
     
   }));
-  console.log(allExerciseData);
+  
+  //console.log(allExerciseData);
 
   return {
     props: {
@@ -24,11 +27,14 @@ export async function getServerSideProps() {
 
 export default function Home({allExerciseData}) {
   
+  //create empty data object for initial state
   const [generatedExerciseList, setGeneratedExerciseList] = useState({activation: [], firstBlock: [], secondBlock: [], thirdBlock: [], connectors: []});
 
+  //init settings states
   const [settingsHidden, setSettingsHidden] = useState(true);
   const [settings, setSettings] = useState({difficultyOne: '1', difficultyThree: '3', groundExercise: '2', dev: false});
 
+  //set state when generate is pressed
   const updateTable = () => {
     setGeneratedExerciseList(generateRandomExercises([...allExerciseData], settings));  
   
@@ -72,7 +78,7 @@ export default function Home({allExerciseData}) {
         
           
         
-        <div contentEditable>
+        <div contentEditable className="container border">
         <h6 className="row">bemelegítés</h6>
         <h6 className="row">aktivációs feladatok (7 perces tabata)</h6>
         <ul className="row">
@@ -126,42 +132,48 @@ export default function Home({allExerciseData}) {
   )
 }
 
+//generates the random data and returns it
 function generateRandomExercises(exerciseDataProp, settings) {
+
+  //deepcopy data
   let exerciseData = [...exerciseDataProp];
+
+  //filter out aerob exercies for in-between use
   let connectorDataSet = exerciseData.filter(data => data.izomcsoport === 'aerob');
   exerciseData = exerciseData.filter(data => data.izomcsoport !== 'aerob');
-  console.log(connectorDataSet);
+
+  //console.log(connectorDataSet);
   let randomExerciseData = {activation: [], firstBlock: [], secondBlock: [], thirdBlock: [], connectors: []};
 
-  //activation
+  //generate activation
   randomExerciseData = {...randomExerciseData, activation: generateRandomBlock(exerciseData, settings)}
-  console.log(exerciseData);
-  console.log(randomExerciseData.activation);
+  //console.log(exerciseData);
+  //console.log(randomExerciseData.activation);
   exerciseData = exerciseData.filter(data => !randomExerciseData.activation.includes(data));
-  console.log(exerciseData);
+  //console.log(exerciseData);
 
-  //firstBlock
+  //generate firstBlock
   randomExerciseData = {...randomExerciseData, firstBlock: generateRandomBlock(exerciseData, settings)}
-  console.log(exerciseData);
-  console.log(randomExerciseData.firstBlock);
+  //console.log(exerciseData);
+  //console.log(randomExerciseData.firstBlock);
   exerciseData = exerciseData.filter(data => !randomExerciseData.firstBlock.includes(data));
-  console.log(exerciseData);
+  //console.log(exerciseData);
 
-  //secondBlock
+  //generate secondBlock
   randomExerciseData = {...randomExerciseData, secondBlock: generateRandomBlock(exerciseData, settings)}
-  console.log(exerciseData);
-  console.log(randomExerciseData.secondBlock);
+  //console.log(exerciseData);
+  //console.log(randomExerciseData.secondBlock);
   exerciseData = exerciseData.filter(data => !randomExerciseData.secondBlock.includes(data));
-  console.log(exerciseData);
+  //console.log(exerciseData);
 
-  //thirdBlock
+  //generate thirdBlock
   randomExerciseData = {...randomExerciseData, thirdBlock: generateRandomBlock(exerciseData, settings)}
-  console.log(exerciseData);
-  console.log(randomExerciseData.thirdBlock);
+  //console.log(exerciseData);
+  //console.log(randomExerciseData.thirdBlock);
   exerciseData = exerciseData.filter(data => !randomExerciseData.thirdBlock.includes(data));
-  console.log(exerciseData);
+  //console.log(exerciseData);
 
-  //connectors
+  //generate connectors
   randomExerciseData.connectors.push(connectorDataSet[getRandomInt(connectorDataSet.length)]);
   connectorDataSet = connectorDataSet.filter(data => !randomExerciseData.connectors.includes(data));
   randomExerciseData.connectors.push(connectorDataSet[getRandomInt(connectorDataSet.length)]);
@@ -171,6 +183,7 @@ function generateRandomExercises(exerciseDataProp, settings) {
   return randomExerciseData
 }
 
+//generate a valid block from the data
 function generateRandomBlock(exerciseData, settings) {
 
   console.log(exerciseData.length);
