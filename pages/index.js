@@ -108,7 +108,7 @@ export default function Home({allExerciseData}) {
           generatedExerciseList.connectors[1].feladat + ' | ' +
           generatedExerciseList.connectors[1].nehezseg + ' | ' +
           generatedExerciseList.connectors[1].orientacio + ' | ' +
-          generatedExerciseList.connectors[1].izomcsoport : generatedExerciseList.connectors[0].feladat
+          generatedExerciseList.connectors[1].izomcsoport : generatedExerciseList.connectors[1].feladat
           }</h6>
 
         <h6 className="row">3. blokk (7 perces tabata)</h6>
