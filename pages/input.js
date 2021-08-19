@@ -1,4 +1,3 @@
-import React, {useState} from 'react';
 import { uuid } from 'uuidv4';
 import Link from 'next/link';
 
